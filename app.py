@@ -58,7 +58,6 @@ def blogsearch():
 
         data = json.loads(res.text)
 
-        # HTML 이스케이프 문자 디코딩
         for item in data.get("items", []):
             item["title"] = html.unescape(item["title"])
             item["description"] = html.unescape(item["description"])
@@ -106,11 +105,9 @@ def blogbody():
     }
 
     try:
-        # 블로그 페이지 접근
         res = requests.get(blog_url, headers=headers)
         soup = BeautifulSoup(res.text, 'html.parser')
 
-        # iframe 안에 실제 본문 있는지 확인
         iframe = soup.find('iframe')
         if iframe and 'src' in iframe.attrs:
             iframe_url = 'https://blog.naver.com' + iframe['src']
@@ -125,5 +122,7 @@ def blogbody():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# ✅ Render용: 0.0.0.0 + 환경변수 포트 바인딩
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port)
